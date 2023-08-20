@@ -46,11 +46,20 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube-canary.yml',
+                //     enableConfigSubstitution: true
+                // )
+                script {
+                    // def kubeconfigPath = writeKubeconfigToFile(KUBECONFIG)
+                    def kubectl = tool name: 'kubectl', type: 'ToolType'
+                    
+                    // sh "cat ${kubeconfigPath}" // Just to verify the kubeconfig content.
+
+                    sh "${kubectl} apply -f train-schedule-kube-canary.yml"
+                    // Replace 'your-kubernetes-manifest.yaml' with the actual path to your Kubernetes manifest YAML file.
+                }
             }
         }
         stage('DeployToProduction') {
