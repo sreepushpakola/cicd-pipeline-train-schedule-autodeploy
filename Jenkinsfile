@@ -57,7 +57,7 @@ pipeline {
                     
                     // sh "cat ${kubeconfigPath}" // Just to verify the kubeconfig content.
 
-                    sh "kubectl apply -f train-schedule-kube-canary.yml"
+                    sh "sudo kubectl apply -f train-schedule-kube-canary.yml"
                     // Replace 'your-kubernetes-manifest.yaml' with the actual path to your Kubernetes manifest YAML file.
                 }
             }
