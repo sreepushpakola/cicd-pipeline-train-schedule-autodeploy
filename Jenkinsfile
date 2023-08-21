@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         //be sure to replace "bhavukm" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "bhavukm/train-schedule"
+        DOCKER_IMAGE_NAME = "tharik007/train-schedule"
     }
     stages {
         stage('Build') {
@@ -31,7 +31,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_login') {
+                    docker.withRegistry('https://registry.hub.docker.com', 'sample-edureka-password') {
                         app.push("${env.BUILD_NUMBER}")
                         app.push("latest")
                     }
@@ -46,11 +46,31 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
+                script{
+                    // def CANARY_REPLICAS = 0
+                    env.CANARY_REPLICAS = "${CANARY_REPLICAS}"
+                }
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
+                    sh """
+                        export KUBECONFIG=\$KUBECONFIG
+                        kubectl apply -f train-schedule-kube-canary.yml
+                    """
+                }
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube-canary.yml',
+                //     enableConfigSubstitution: true
+                // )
+                // script {
+                    // def kubeconfigPath = writeKubeconfigToFile(KUBECONFIG)
+                    // def kubectl = tool name: 'kubectl', type: 'ToolType'
+                    
+                    // sh "cat ${kubeconfigPath}" // Just to verify the kubeconfig content.
+                    // def kubeconfig = credentials('kubeconfig-credentials-id')
+                    // sh "kubectl --kubeconfig=${kubeconfig} apply -f train-schedule-kube-canary.yml"
+                    // sh "sudo kubectl apply -f train-schedule-kube-canary.yml"
+                    // Replace 'your-kubernetes-manifest.yaml' with the actual path to your Kubernetes manifest YAML file.
+                // }
             }
         }
         stage('DeployToProduction') {
@@ -63,16 +83,28 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube.yml',
-                    enableConfigSubstitution: true
-                )
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
+                    sh """
+                        export KUBECONFIG=\$KUBECONFIG
+                        kubectl apply -f train-schedule-kube-canary.yml
+                    """
+                }
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
+                    sh """
+                        export KUBECONFIG=\$KUBECONFIG
+                        kubectl apply -f train-schedule-kube.yml
+                    """
+                }
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube-canary.yml',
+                //     enableConfigSubstitution: true
+                // )
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube.yml',
+                //     enableConfigSubstitution: true
+                // )
             }
         }
     }
