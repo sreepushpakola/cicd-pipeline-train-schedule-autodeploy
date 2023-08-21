@@ -53,8 +53,6 @@ pipeline {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
                     sh """
                         export KUBECONFIG=\$KUBECONFIG
-                        export DOCKER_IMAGE_NAME=\$DOCKER_IMAGE_NAME
-                        export BUILD_NUMBER=\$BUILD_NUMBER
                         kubectl apply -f train-schedule-kube-canary.yml
                     """
                 }
