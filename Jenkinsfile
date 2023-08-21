@@ -83,16 +83,28 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube.yml',
-                    enableConfigSubstitution: true
-                )
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
+                    sh """
+                        export KUBECONFIG=\$KUBECONFIG
+                        kubectl apply -f train-schedule-kube-canary.yml
+                    """
+                }
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
+                    sh """
+                        export KUBECONFIG=\$KUBECONFIG
+                        kubectl apply -f train-schedule-kube.yml
+                    """
+                }
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube-canary.yml',
+                //     enableConfigSubstitution: true
+                // )
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube.yml',
+                //     enableConfigSubstitution: true
+                // )
             }
         }
     }
