@@ -31,7 +31,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'sample-edureka-password') {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credential') {
                         app.push("${env.BUILD_NUMBER}")
                         app.push("latest")
                     }
