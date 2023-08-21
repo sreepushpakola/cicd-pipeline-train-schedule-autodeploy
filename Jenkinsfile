@@ -47,13 +47,14 @@ pipeline {
             }
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
-                sh """
-                    export KUBECONFIG=\$KUBECONFIG
-                    export CANARY_REPLICAS=\$CANARY_REPLICAS
-                    export DOCKER_IMAGE_NAME=\$DOCKER_IMAGE_NAME
-                    export BUILD_NUMBER=\$BUILD_NUMBER
-                    kubectl apply -f train-schedule-kube-canary.yml
-                """
+                    def CANARY_REPLICAS = 0
+                    env.CANARY_REPLICAS = ${CANARY_REPLICAS}
+                    sh """
+                        export KUBECONFIG=\$KUBECONFIG
+                        export DOCKER_IMAGE_NAME=\$DOCKER_IMAGE_NAME
+                        export BUILD_NUMBER=\$BUILD_NUMBER
+                        kubectl apply -f train-schedule-kube-canary.yml
+                    """
                 }
                 // kubernetesDeploy(
                 //     kubeconfigId: 'kubeconfig',
