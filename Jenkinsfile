@@ -56,8 +56,9 @@ pipeline {
                     // def kubectl = tool name: 'kubectl', type: 'ToolType'
                     
                     // sh "cat ${kubeconfigPath}" // Just to verify the kubeconfig content.
-
-                    sh "sudo kubectl apply -f train-schedule-kube-canary.yml"
+                    def kubeconfig = credentials('kubeconfig-credentials-id')
+                    sh "kubectl --kubeconfig=${kubeconfig} apply -f train-schedule-kube-canary.yml"
+                    // sh "sudo kubectl apply -f train-schedule-kube-canary.yml"
                     // Replace 'your-kubernetes-manifest.yaml' with the actual path to your Kubernetes manifest YAML file.
                 }
             }
