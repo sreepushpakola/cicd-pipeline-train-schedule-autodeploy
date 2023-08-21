@@ -48,7 +48,7 @@ pipeline {
             steps {
                 script{
                     // def CANARY_REPLICAS = 0
-                    env.CANARY_REPLICAS = ${CANARY_REPLICAS}
+                    env.CANARY_REPLICAS = "${CANARY_REPLICAS}"
                 }
                 withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
                     sh """
