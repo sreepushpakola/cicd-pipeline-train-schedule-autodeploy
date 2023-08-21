@@ -49,7 +49,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
                 sh """
                     export KUBECONFIG=\$KUBECONFIG
-                    kubectl apply -f train-schedule-kube-canary.yml.yaml
+                    kubectl apply -f train-schedule-kube-canary.yml
                 """
                 }
                 // kubernetesDeploy(
