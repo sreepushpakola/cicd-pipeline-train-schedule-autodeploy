@@ -10,7 +10,7 @@ spec:
   ports:
   - protocol: TCP
     port: 8080
-    nodePort: 8081
+    nodePort: 31001
 
 ---
 
@@ -21,7 +21,7 @@ metadata:
   labels:
     app: train-schedule
 spec:
-  replicas: $CANARY_REPLICAS
+  replicas: 0
   selector:
     matchLabels:
       app: train-schedule
@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: train-schedule
-        image: $DOCKER_IMAGE_NAME:$BUILD_NUMBER
+        image: tharik007/train-schedule:latest
         ports:
         - containerPort: 8080
         livenessProbe:
