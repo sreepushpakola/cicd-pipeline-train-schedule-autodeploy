@@ -46,21 +46,26 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
+                sh """
+                    export KUBECONFIG=\$KUBECONFIG
+                    kubectl apply -f train-schedule-kube-canary.yml.yaml
+                """
                 // kubernetesDeploy(
                 //     kubeconfigId: 'kubeconfig',
                 //     configs: 'train-schedule-kube-canary.yml',
                 //     enableConfigSubstitution: true
                 // )
-                script {
+                // script {
                     // def kubeconfigPath = writeKubeconfigToFile(KUBECONFIG)
                     // def kubectl = tool name: 'kubectl', type: 'ToolType'
                     
                     // sh "cat ${kubeconfigPath}" // Just to verify the kubeconfig content.
-                    def kubeconfig = credentials('kubeconfig-credentials-id')
-                    sh "kubectl --kubeconfig=${kubeconfig} apply -f train-schedule-kube-canary.yml"
+                    // def kubeconfig = credentials('kubeconfig-credentials-id')
+                    // sh "kubectl --kubeconfig=${kubeconfig} apply -f train-schedule-kube-canary.yml"
                     // sh "sudo kubectl apply -f train-schedule-kube-canary.yml"
                     // Replace 'your-kubernetes-manifest.yaml' with the actual path to your Kubernetes manifest YAML file.
-                }
+                // }
             }
         }
         stage('DeployToProduction') {
