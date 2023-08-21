@@ -51,6 +51,7 @@ pipeline {
                     export KUBECONFIG=\$KUBECONFIG
                     kubectl apply -f train-schedule-kube-canary.yml.yaml
                 """
+                }
                 // kubernetesDeploy(
                 //     kubeconfigId: 'kubeconfig',
                 //     configs: 'train-schedule-kube-canary.yml',
