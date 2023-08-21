@@ -46,9 +46,11 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
-                    def CANARY_REPLICAS = 0
+                script{
+                    // def CANARY_REPLICAS = 0
                     env.CANARY_REPLICAS = ${CANARY_REPLICAS}
+                }
+                withCredentials([file(credentialsId: 'kubeconfig-credentials-id', variable: 'KUBECONFIG')]) {
                     sh """
                         export KUBECONFIG=\$KUBECONFIG
                         export DOCKER_IMAGE_NAME=\$DOCKER_IMAGE_NAME
